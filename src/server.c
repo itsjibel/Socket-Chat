@@ -28,25 +28,23 @@ int main(int argc, char const* argv[])
         perror("setsockopt");
         exit(EXIT_FAILURE);
     }
+
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
 
     // Forcefully attaching socket to the port 8080
-    if (bind(server_fd, (struct sockaddr*)&address,
-             sizeof(address))
-        < 0) {
+    if (bind(server_fd, (struct sockaddr*) &address, sizeof(address)) < 0) {
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
+
     if (listen(server_fd, 3) < 0) {
         perror("listen");
         exit(EXIT_FAILURE);
     }
-    if ((new_socket
-        = accept(server_fd, (struct sockaddr*)&address,
-                 (socklen_t*)&addrlen))
-        < 0) {
+
+    if ((new_socket = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen)) < 0) {
         perror("accept");
         exit(EXIT_FAILURE);
     }
@@ -55,14 +53,14 @@ int main(int argc, char const* argv[])
     while (1) {
         fgets(message, MESSAGE_LENGTH_LIMIT, stdin);
         size_t len = strlen(message);
-        if (len > 0 && message[len - 1] == '\n') {
+        if (len > 0 && message[len - 1] == '\n')
             message[len - 1] = '\0';
-        }
+
         send(new_socket, message, strlen(message), 0);
     	char buffer[1024] = { 0 };
         valread = read(new_socket, buffer, 1024);
         printf("Walter White: %s\n", buffer);
-        printf("You: %s", message);
+        printf("You: %s\n", message);
     }
 
     // closing the connected socket
